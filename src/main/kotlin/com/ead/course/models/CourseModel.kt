@@ -51,7 +51,11 @@ data class CourseModel(
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    val modules: Set<ModuleModel> = setOf()
+    val modules: Set<ModuleModel> = setOf(),
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+    val coursesUsers: Set<CourseUserModel> = setOf()
 ): Serializable {
 
     infix fun updateByDto(courseDto: CourseDto) {
