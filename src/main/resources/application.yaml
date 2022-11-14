@@ -6,6 +6,8 @@ logging:
   level:
     org:
       flywaydb: DEBUG
+    com.ead: TRACE
+    root: INFO
 
 spring:
   datasource:
@@ -19,3 +21,8 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
+
+ead:
+  api:
+    url:
+      authuser: 'http://localhost:8087'

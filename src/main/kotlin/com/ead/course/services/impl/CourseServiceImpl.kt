@@ -2,6 +2,7 @@ package com.ead.course.services.impl
 
 import com.ead.course.models.CourseModel
 import com.ead.course.repositories.CourseRepository
+import com.ead.course.repositories.CourseUserRepository
 import com.ead.course.repositories.LessonRepository
 import com.ead.course.repositories.ModuleRepository
 import com.ead.course.services.CourseService
@@ -15,7 +16,8 @@ import javax.transaction.Transactional
 class CourseServiceImpl(
     val courseRepository: CourseRepository,
     val moduleRepository: ModuleRepository,
-    val lessonRepository: LessonRepository
+    val lessonRepository: LessonRepository,
+    val courseUserRepository: CourseUserRepository
 ): CourseService {
 
     @Transactional
@@ -28,6 +30,10 @@ class CourseServiceImpl(
             }
         }
         moduleRepository.deleteAll(modules)
+        val courseUsers = courseUserRepository.findAllCourseUserIntoCourse(course.id)
+        if (courseUsers.isNotEmpty()) {
+            courseUserRepository.deleteAll(courseUsers)
+        }
         courseRepository.delete(course)
     }
 

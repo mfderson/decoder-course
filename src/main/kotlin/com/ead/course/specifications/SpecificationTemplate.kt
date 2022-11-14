@@ -1,6 +1,7 @@
 package com.ead.course.specifications
 
 import com.ead.course.models.CourseModel
+import com.ead.course.models.CourseUserModel
 import com.ead.course.models.LessonModel
 import com.ead.course.models.ModuleModel
 import net.kaczmarzyk.spring.data.jpa.domain.Equal
@@ -40,6 +41,14 @@ class SpecificationTemplate {
                     criteriaBuilder.isMember(lesson, moduleLessons)
                 )
 
+            }
+        }
+
+        fun courseUserId(userId: UUID): Specification<CourseModel> {
+            return Specification<CourseModel> { root, query, criteriaBuilder ->
+                query.distinct(true)
+                val courseProd = root.join<CourseModel, CourseUserModel>("coursesUsers")
+                return@Specification criteriaBuilder.equal(courseProd.get<UUID>("userId"), userId)
             }
         }
     }
