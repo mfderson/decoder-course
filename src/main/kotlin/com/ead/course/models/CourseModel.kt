@@ -66,4 +66,8 @@ data class CourseModel(
         this.level = courseDto.level
         this.lastUpdateDate = LocalDateTime.now(ZoneId.of("UTC"))
     }
+
+    infix fun convertToCourseUserModel(userId: UUID): CourseUserModel {
+        return CourseUserModel(course = this, userId = userId)
+    }
 }

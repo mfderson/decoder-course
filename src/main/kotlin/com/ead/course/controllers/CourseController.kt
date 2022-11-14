@@ -4,6 +4,7 @@ import com.ead.course.dtos.CourseDto
 import com.ead.course.models.CourseModel
 import com.ead.course.services.CourseService
 import com.ead.course.specifications.SpecificationTemplate
+import com.ead.course.validations.CourseValidator
 import org.modelmapper.ModelMapper
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.validation.Errors
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -20,14 +22,21 @@ import javax.validation.Valid
 @RestController
 @RequestMapping("/courses")
 @CrossOrigin(origins = ["*"], maxAge = 3600)
-class CourseController(val courseService: CourseService) {
+class CourseController(
+    val courseService: CourseService,
+    val courseValidator: CourseValidator
+) {
 
     companion object {
         val mapper = ModelMapper()
     }
 
     @PostMapping
-    fun saveCourse(@RequestBody @Valid courseDto: CourseDto): ResponseEntity<*> {
+    fun saveCourse(@RequestBody courseDto: CourseDto, errors: Errors): ResponseEntity<*> {
+        courseValidator.validate(courseDto, errors)
+        if (errors.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.allErrors)
+        }
         val course = mapper.map(courseDto, CourseModel::class.java)
         course.creationDate = LocalDateTime.now(ZoneId.of("UTC"))
         course.lastUpdateDate = LocalDateTime.now(ZoneId.of("UTC"))
@@ -67,8 +76,15 @@ class CourseController(val courseService: CourseService) {
             size = 10,
             sort = ["id"],
             direction = Sort.Direction.ASC
-        ) pageable: Pageable
+        ) pageable: Pageable,
+        @RequestParam(required = false) userId: UUID?
     ): ResponseEntity<Page<CourseModel>> {
+        userId?.let {
+            return ResponseEntity.status(HttpStatus.OK).body(courseService.findAll(
+                SpecificationTemplate.courseUserId(userId).and(spec),
+                pageable
+            ))
+        }
         return ResponseEntity.status(HttpStatus.OK).body(courseService.findAll(spec, pageable))
     }
 
