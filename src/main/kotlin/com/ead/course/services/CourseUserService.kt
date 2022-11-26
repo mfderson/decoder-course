@@ -9,4 +9,8 @@ interface CourseUserService {
     fun existsByCourseAndUserId(courseModel: CourseModel, userId: UUID): Boolean
     fun save(courseUserModel: CourseUserModel): CourseUserModel
     fun saveAndSendSubscriptionInCourse(courseUserModel: CourseUserModel): CourseUserModel
+
+    fun existsByUserId(userId: UUID): Boolean
+
+    fun deleteCourseUserByUser(userId: UUID)
 }

@@ -1,5 +1,6 @@
 package com.ead.course.services.impl
 
+import com.ead.course.clients.AuthuserClient
 import com.ead.course.models.CourseModel
 import com.ead.course.repositories.CourseRepository
 import com.ead.course.repositories.CourseUserRepository
@@ -17,11 +18,13 @@ class CourseServiceImpl(
     val courseRepository: CourseRepository,
     val moduleRepository: ModuleRepository,
     val lessonRepository: LessonRepository,
-    val courseUserRepository: CourseUserRepository
+    val courseUserRepository: CourseUserRepository,
+    val authuserClient: AuthuserClient
 ): CourseService {
 
     @Transactional
     override fun delete(course: CourseModel) {
+        var needDeleteCourseInAuthUser = false
         val modules = moduleRepository.findAllIntoCourse(course.id)
         modules.forEach { module ->
             val lessons = lessonRepository.findAllIntoModule(module.id)
@@ -33,8 +36,13 @@ class CourseServiceImpl(
         val courseUsers = courseUserRepository.findAllCourseUserIntoCourse(course.id)
         if (courseUsers.isNotEmpty()) {
             courseUserRepository.deleteAll(courseUsers)
+            needDeleteCourseInAuthUser = true
         }
         courseRepository.delete(course)
+        if (needDeleteCourseInAuthUser) {
+            authuserClient.deleteCourseInAuthUser(course.id)
+        }
+
     }
 
     override fun save(course: CourseModel) = courseRepository.save(course)

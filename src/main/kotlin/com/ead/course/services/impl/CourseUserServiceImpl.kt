@@ -31,4 +31,13 @@ class CourseUserServiceImpl(
         return savedCourseUser
     }
 
+    override fun existsByUserId(userId: UUID) =
+        courseUserRepository.existsByUserId(userId)
+
+    @Transactional
+    override fun deleteCourseUserByUser(userId: UUID) {
+        courseUserRepository.deleteAllByUserId(userId)
+    }
+
+
 }
