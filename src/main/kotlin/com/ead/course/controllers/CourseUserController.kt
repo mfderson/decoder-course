@@ -29,7 +29,11 @@ class CourseUserController(
     fun getAllUsersByCourse(
         @PageableDefault(page = 0, size = 10, sort = ["id"], direction = Sort.Direction.ASC) pageable: Pageable,
         @PathVariable(required = true) courseId: UUID
-    ): ResponseEntity<Page<UserDto>> {
+    ): ResponseEntity<*> {
+        val course = courseService.findById(courseId)
+        if (!course.isPresent) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found")
+        }
         return ResponseEntity.status(HttpStatus.OK).body(authuserClient.getAllUsersByCourse(courseId, pageable))
     }
 

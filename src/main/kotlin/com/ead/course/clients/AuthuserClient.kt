@@ -61,4 +61,10 @@ class AuthuserClient(val restTemplate: RestTemplate, val utilsService: UtilsServ
 
         restTemplate.postForObject(url, userCourseDto, String::class.java)
     }
+
+    fun deleteCourseInAuthUser(courseId: UUID) {
+        val url = "$REQUEST_URL_AUTHUSER/users/courses/$courseId"
+
+        restTemplate.exchange(url, HttpMethod.DELETE, null, String::class.java)
+    }
 }
