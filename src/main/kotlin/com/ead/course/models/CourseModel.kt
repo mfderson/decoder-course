@@ -51,11 +51,7 @@ data class CourseModel(
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    val modules: Set<ModuleModel> = setOf(),
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
-    val coursesUsers: Set<CourseUserModel> = setOf()
+    val modules: Set<ModuleModel> = setOf()
 ): Serializable {
 
     infix fun updateByDto(courseDto: CourseDto) {
@@ -65,9 +61,5 @@ data class CourseModel(
         this.status = courseDto.status
         this.level = courseDto.level
         this.lastUpdateDate = LocalDateTime.now(ZoneId.of("UTC"))
-    }
-
-    infix fun convertToCourseUserModel(userId: UUID): CourseUserModel {
-        return CourseUserModel(course = this, userId = userId)
     }
 }

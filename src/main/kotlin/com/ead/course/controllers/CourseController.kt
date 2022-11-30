@@ -79,12 +79,6 @@ class CourseController(
         ) pageable: Pageable,
         @RequestParam(required = false) userId: UUID?
     ): ResponseEntity<Page<CourseModel>> {
-        userId?.let {
-            return ResponseEntity.status(HttpStatus.OK).body(courseService.findAll(
-                SpecificationTemplate.courseUserId(userId).and(spec),
-                pageable
-            ))
-        }
         return ResponseEntity.status(HttpStatus.OK).body(courseService.findAll(spec, pageable))
     }
 
