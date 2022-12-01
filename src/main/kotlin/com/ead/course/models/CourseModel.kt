@@ -51,7 +51,15 @@ data class CourseModel(
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    val modules: Set<ModuleModel> = setOf()
+    val modules: Set<ModuleModel> = setOf(),
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "courses_users",
+        joinColumns = [JoinColumn(name = "course_id", referencedColumnName = "id")],
+        inverseJoinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")])
+    val users: Set<UserModel> = setOf()
 ): Serializable {
 
     infix fun updateByDto(courseDto: CourseDto) {
