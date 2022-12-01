@@ -43,6 +43,34 @@ class SpecificationTemplate {
 
             }
         }
+
+        fun userCourseId(courseId: UUID): Specification<UserModel> {
+            return Specification<UserModel> { root, query, criteriaBuilder ->
+                query.distinct(true)
+                val user: Root<UserModel> = root
+                val course: Root<CourseModel> = query.from(CourseModel::class.java)
+                val coursesUsers: Expression<Collection<UserModel>> = course.get("users")
+                return@Specification criteriaBuilder.and(
+                    criteriaBuilder.equal(course.get<UUID>("id"), courseId),
+                    criteriaBuilder.isMember(user, coursesUsers)
+                )
+
+            }
+        }
+
+        fun courseUserId(userId: UUID): Specification<CourseModel> {
+            return Specification<CourseModel> { root, query, criteriaBuilder ->
+                query.distinct(true)
+                val course: Root<CourseModel> = root
+                val user: Root<UserModel> = query.from(UserModel::class.java)
+                val usersCourses: Expression<Collection<CourseModel>> = user.get("courses")
+                return@Specification criteriaBuilder.and(
+                    criteriaBuilder.equal(user.get<UUID>("id"), userId),
+                    criteriaBuilder.isMember(course, usersCourses)
+                )
+
+            }
+        }
     }
 
     @And(
@@ -59,5 +87,11 @@ class SpecificationTemplate {
     @Spec(path = "title", spec = Like::class)
     interface LessonSpec: Specification<LessonModel> {}
 
-
+    @And(
+        Spec(path = "email", spec = Like::class),
+        Spec(path = "fullName", spec = Like::class),
+        Spec(path = "status", spec = Equal::class),
+        Spec(path = "type", spec = Equal::class),
+    )
+    interface UserSpec: Specification<UserModel> {}
 }
