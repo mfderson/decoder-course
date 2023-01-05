@@ -16,4 +16,11 @@ class UserServiceImpl(
         return userRepository.findAll(spec, pageable)
     }
 
+    override fun save(userModel: UserModel) =
+        userRepository.save(userModel)
+
+    override fun delete(userModel: UserModel) {
+        userRepository.deleteById(userModel.id)
+    }
+
 }

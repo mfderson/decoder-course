@@ -7,4 +7,6 @@ import org.springframework.data.jpa.domain.Specification
 
 interface UserService {
     fun findAll(spec: Specification<UserModel>, pageable: Pageable): Page<UserModel>
+    fun save(userModel: UserModel): UserModel
+    fun delete(userModel: UserModel)
 }

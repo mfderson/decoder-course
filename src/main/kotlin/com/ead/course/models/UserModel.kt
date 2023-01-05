@@ -1,7 +1,6 @@
 package com.ead.course.models
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.JsonMappingException
 import java.io.Serializable
 import java.util.*
 import javax.persistence.*
@@ -20,10 +19,10 @@ data class UserModel(
     val fullName: String = "",
 
     @Column(nullable = false)
-    val userStatus: String = "",
+    val status: String = "",
 
     @Column(nullable = false)
-    val userType: String = "",
+    val type: String = "",
 
     @Column(length = 20)
     val cpf: String = "",
