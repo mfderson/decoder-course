@@ -1,9 +1,7 @@
 package com.ead.course.services.impl
 
-import com.ead.course.clients.AuthuserClient
 import com.ead.course.models.CourseModel
 import com.ead.course.repositories.CourseRepository
-import com.ead.course.repositories.CourseUserRepository
 import com.ead.course.repositories.LessonRepository
 import com.ead.course.repositories.ModuleRepository
 import com.ead.course.services.CourseService
@@ -17,14 +15,11 @@ import javax.transaction.Transactional
 class CourseServiceImpl(
     val courseRepository: CourseRepository,
     val moduleRepository: ModuleRepository,
-    val lessonRepository: LessonRepository,
-    val courseUserRepository: CourseUserRepository,
-    val authuserClient: AuthuserClient
+    val lessonRepository: LessonRepository
 ): CourseService {
 
     @Transactional
     override fun delete(course: CourseModel) {
-        var needDeleteCourseInAuthUser = false
         val modules = moduleRepository.findAllIntoCourse(course.id)
         modules.forEach { module ->
             val lessons = lessonRepository.findAllIntoModule(module.id)
@@ -33,16 +28,10 @@ class CourseServiceImpl(
             }
         }
         moduleRepository.deleteAll(modules)
-        val courseUsers = courseUserRepository.findAllCourseUserIntoCourse(course.id)
-        if (courseUsers.isNotEmpty()) {
-            courseUserRepository.deleteAll(courseUsers)
-            needDeleteCourseInAuthUser = true
-        }
-        courseRepository.delete(course)
-        if (needDeleteCourseInAuthUser) {
-            authuserClient.deleteCourseInAuthUser(course.id)
-        }
 
+        courseRepository.deleteCourseUserByCourse(course.id)
+
+        courseRepository.delete(course)
     }
 
     override fun save(course: CourseModel) = courseRepository.save(course)
@@ -51,4 +40,13 @@ class CourseServiceImpl(
 
     override fun findAll(spec: Specification<CourseModel>?, pageable: Pageable) =
         courseRepository.findAll(spec, pageable)
+
+    override fun existsByCourseAndUser(courseId: UUID, userId: UUID) =
+        courseRepository.existsByCourseAndUser(courseId, userId)
+
+
+    @Transactional
+    override fun saveSubscriptionUserInCourse(courseId: UUID, userId: UUID) {
+        courseRepository.saveSubscriptionUserInCourse(courseId, userId)
+    }
 }

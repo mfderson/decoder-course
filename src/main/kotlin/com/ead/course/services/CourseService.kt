@@ -12,4 +12,8 @@ interface CourseService {
     fun save(course: CourseModel): CourseModel
     fun findById(id: UUID): Optional<CourseModel>
     fun findAll(spec: Specification<CourseModel>?, pageable: Pageable): Page<CourseModel>
+
+    fun existsByCourseAndUser(courseId: UUID, userId: UUID): Boolean
+
+    fun saveSubscriptionUserInCourse(courseId: UUID, userId: UUID)
 }

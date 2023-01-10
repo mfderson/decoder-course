@@ -25,11 +25,19 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
+  rabbitmq:
+    addresses: amqps://uiunkbop:YdOPpryWSXEGGAVeLk24v_xOnmdlVxm5@moose.rmq.cloudamqp.com/uiunkbop
 
 ead:
   api:
     url:
       authuser: 'http://ead-authuser-service/ead-authuser'
+  broker:
+    exchange:
+      userEventExchange: ead.userevent
+    queue:
+      userEventQueue:
+        name: ead.userevent.ms.course
 
 eureka:
   client:
