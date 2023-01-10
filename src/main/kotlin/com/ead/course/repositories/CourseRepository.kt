@@ -22,4 +22,16 @@ interface CourseRepository: JpaRepository<CourseModel, UUID>, JpaSpecificationEx
         insert into courses_users (course_id, user_id) values(:courseId, :userId)
     """, nativeQuery = true)
     fun saveSubscriptionUserInCourse(courseId: UUID, userId: UUID)
+
+    @Modifying
+    @Query(value = """
+        delete from courses_users where course_id = :courseId
+    """, nativeQuery = true)
+    fun deleteCourseUserByCourse(@Param("courseId") courseId: UUID)
+
+    @Modifying
+    @Query(value = """
+        delete from courses_users where user_id = :userId
+    """, nativeQuery = true)
+    fun deleteCourseUserByUser(@Param("userId") userId: UUID)
 }

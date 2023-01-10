@@ -29,6 +29,8 @@ class CourseServiceImpl(
         }
         moduleRepository.deleteAll(modules)
 
+        courseRepository.deleteCourseUserByCourse(course.id)
+
         courseRepository.delete(course)
     }
 
