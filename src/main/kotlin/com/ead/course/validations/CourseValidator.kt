@@ -1,6 +1,9 @@
 package com.ead.course.validations
 
+import com.ead.authuser.enums.UserType
 import com.ead.course.dtos.CourseDto
+import com.ead.course.services.UserService
+import org.apache.catalina.User
 import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
@@ -11,6 +14,7 @@ import java.util.*
 @Component
 class CourseValidator(
     @Qualifier("defaultValidator") val validator: Validator,
+    val userService: UserService
 ) : Validator {
 
     companion object {
@@ -31,26 +35,22 @@ class CourseValidator(
     }
 
     private fun validateUserInstructor(userInstructorId: UUID, errors: Errors) {
-//        try {
-//            val userInstructorResponse = authuserClient.getUserById(userInstructorId)
-//            userInstructorResponse.body?.type
-//                .takeIf { it != UserType.INSTRUCTOR && it != UserType.ADMIN }
-//                ?.apply {
-//                    errors.rejectValue(
-//                        "userInstructor",
-//                        "userInstructorError",
-//                        "User must be INSTRUCTOR or ADMIN"
-//                    )
-//                }
-//        } catch (e: HttpStatusCodeException) {
-//            LOGGER.info("[validateUserInstructor] ERROR: User must be INSTRUCTOR or ADMIN userId: $userInstructorId", e)
-//            if (e.statusCode == HttpStatus.NOT_FOUND) {
-//                errors.rejectValue(
-//                    "userInstructor",
-//                    "userInstructorError",
-//                    "Instructor not found"
-//                )
-//            }
-//        }
+        val userModel = userService.findById(userInstructorId)
+
+        userModel ?: errors.rejectValue(
+            "userInstructor",
+            "userInstructorError",
+            "Instructor not found"
+        )
+
+        userModel?.takeIf {
+            it.type == UserType.STUDENT.toString()
+        }?.apply {
+            errors.rejectValue(
+                "userInstructor",
+                "userInstructorError",
+                "User must be INSTRUCTOR or ADMIN"
+            )
+        }
     }
 }

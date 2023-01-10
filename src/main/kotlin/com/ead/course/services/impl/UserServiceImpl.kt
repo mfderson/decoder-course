@@ -6,7 +6,9 @@ import com.ead.course.services.UserService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.domain.Specification
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
 class UserServiceImpl(
@@ -23,4 +25,6 @@ class UserServiceImpl(
         userRepository.deleteById(userModel.id)
     }
 
+    override fun findById(userId: UUID) =
+        userRepository.findByIdOrNull(userId)
 }

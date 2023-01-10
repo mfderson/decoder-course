@@ -38,4 +38,13 @@ class CourseServiceImpl(
 
     override fun findAll(spec: Specification<CourseModel>?, pageable: Pageable) =
         courseRepository.findAll(spec, pageable)
+
+    override fun existsByCourseAndUser(courseId: UUID, userId: UUID) =
+        courseRepository.existsByCourseAndUser(courseId, userId)
+
+
+    @Transactional
+    override fun saveSubscriptionUserInCourse(courseId: UUID, userId: UUID) {
+        courseRepository.saveSubscriptionUserInCourse(courseId, userId)
+    }
 }

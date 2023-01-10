@@ -1,5 +1,6 @@
 package com.ead.course.controllers
 
+import com.ead.authuser.enums.UserStatus
 import com.ead.course.dtos.SubscriptionDto
 import com.ead.course.services.CourseService
 import com.ead.course.services.UserService
@@ -22,7 +23,7 @@ class CourseUserController(
 
     @GetMapping("/courses/{courseId}/users")
     fun getAllUsersByCourse(
-        spec: SpecificationTemplate.UserSpec,
+        spec: SpecificationTemplate.UserSpec?,
         @PageableDefault(page = 0, size = 10, sort = ["id"], direction = Sort.Direction.ASC) pageable: Pageable,
         @PathVariable(required = true) courseId: UUID
     ): ResponseEntity<*> {
@@ -45,8 +46,20 @@ class CourseUserController(
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found")
         }
 
-        TODO("Verify state transfer")
+        if (courseService.existsByCourseAndUser(courseId, subscriptionDto.userId)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: subscription already exists")
+        }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("")
+        val user =  userService.findById(subscriptionDto.userId)
+
+        user ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found")
+
+        if (user.status == UserStatus.BLOCKED.toString()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("User is blocked")
+        }
+
+        courseService.saveSubscriptionUserInCourse(courseId, subscriptionDto.userId)
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("Subscription created successfully")
     }
 }
