@@ -1,47 +1,9 @@
-
-server:
-  port: 8082
-  servlet:
-    context-path: '/ead-course/'
-
-logging:
-  level:
-    org:
-      flywaydb: DEBUG
-    com.ead: TRACE
-    root: INFO
-
 spring:
   application:
     name: ead-course-service
-  datasource:
-    url: jdbc:postgresql://localhost:5432/course
-    username: anderson
-    password: Senha123
-  jpa:
-    properties:
-      hibernate:
-        show_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      ddl-auto: none
-  rabbitmq:
-    addresses: amqps://uiunkbop:YdOPpryWSXEGGAVeLk24v_xOnmdlVxm5@moose.rmq.cloudamqp.com/uiunkbop
-
-ead:
-  api:
-    url:
-      authuser: 'http://ead-authuser-service/ead-authuser'
-  broker:
-    exchange:
-      userEventExchange: ead.userevent
-    queue:
-      userEventQueue:
-        name: ead.userevent.ms.course
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka
-  instance:
-    hostname: localhost
+  config:
+    import: 'configserver:'
+  cloud:
+    config:
+      discovery:
+        service-id: ead-config-server
